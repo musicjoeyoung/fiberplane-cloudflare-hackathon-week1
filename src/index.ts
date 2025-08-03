@@ -1,11 +1,13 @@
+import * as schema from "./db/schema";
+
 import { createFiberplane, createOpenAPISpec } from "@fiberplane/hono";
-import { drizzle } from "drizzle-orm/d1";
+
 import { Hono } from "hono";
-import { eq } from "drizzle-orm";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPTransport } from "@hono/mcp";
+import { drizzle } from "drizzle-orm/d1";
+import { eq } from "drizzle-orm";
 import { z } from "zod";
-import * as schema from "./db/schema";
 
 type Bindings = {
   DB: D1Database;
@@ -237,7 +239,7 @@ function createMcpServer(env: Bindings) {
     },
     async ({ state }) => {
       const authUrl = spotify.getAuthUrl(state);
-      
+
       return {
         content: [
           {
@@ -258,9 +260,9 @@ function createMcpServer(env: Bindings) {
       try {
         const tokenResponse = await spotify.exchangeCodeForToken(code);
         const userProfile = await spotify.getUserProfile(tokenResponse.access_token);
-        
+
         const expiresAt = new Date(Date.now() + tokenResponse.expires_in * 1000);
-        
+
         await db.insert(schema.users).values({
           spotifyId: userProfile.id,
           email: userProfile.email,
@@ -314,7 +316,7 @@ function createMcpServer(env: Bindings) {
     async ({ userId, mood, playlistName, trackCount, isPublic }) => {
       try {
         const [user] = await db.select().from(schema.users).where(eq(schema.users.id, userId));
-        
+
         if (!user || !user.accessToken) {
           return {
             content: [
@@ -328,7 +330,7 @@ function createMcpServer(env: Bindings) {
         }
 
         let accessToken = user.accessToken;
-        
+
         if (user.tokenExpiresAt && new Date() > user.tokenExpiresAt) {
           if (!user.refreshToken) {
             return {
@@ -341,10 +343,10 @@ function createMcpServer(env: Bindings) {
               isError: true
             };
           }
-          
+
           const refreshResponse = await spotify.refreshToken(user.refreshToken);
           accessToken = refreshResponse.access_token;
-          
+
           await db.update(schema.users)
             .set({
               accessToken: refreshResponse.access_token,
@@ -365,7 +367,7 @@ function createMcpServer(env: Bindings) {
 
         const query = searchQueries[mood as keyof typeof searchQueries] || `${mood} music`;
         const tracks = await spotify.searchTracks(accessToken, query, trackCount);
-        
+
         if (tracks.length === 0) {
           return {
             content: [
@@ -391,7 +393,7 @@ function createMcpServer(env: Bindings) {
 
         const [moodRecord] = await db.select().from(schema.moods).where(eq(schema.moods.name, mood));
         let moodId = moodRecord?.id;
-        
+
         if (!moodRecord) {
           const [newMood] = await db.insert(schema.moods).values({
             name: mood,
@@ -412,7 +414,7 @@ function createMcpServer(env: Bindings) {
 
         for (const track of tracks) {
           const [existingTrack] = await db.select().from(schema.tracks).where(eq(schema.tracks.spotifyId, track.id));
-          
+
           if (!existingTrack) {
             await db.insert(schema.tracks).values({
               title: track.name,
@@ -454,8 +456,8 @@ function createMcpServer(env: Bindings) {
     async () => {
       try {
         const moods = await db.select().from(schema.moods);
-        
-        const moodList = moods.length > 0 
+
+        const moodList = moods.length > 0
           ? moods.map(mood => `- ${mood.name}: ${mood.description || 'No description'}`).join('\n')
           : "No moods available. Try creating a playlist first!";
 
@@ -498,9 +500,9 @@ function createMcpServer(env: Bindings) {
           spotifyPlaylistId: schema.spotifyPlaylists.spotifyPlaylistId,
           moodName: schema.moods.name
         })
-        .from(schema.spotifyPlaylists)
-        .leftJoin(schema.moods, eq(schema.spotifyPlaylists.moodId, schema.moods.id))
-        .where(eq(schema.spotifyPlaylists.userId, userId));
+          .from(schema.spotifyPlaylists)
+          .leftJoin(schema.moods, eq(schema.spotifyPlaylists.moodId, schema.moods.id))
+          .where(eq(schema.spotifyPlaylists.userId, userId));
 
         if (playlists.length === 0) {
           return {
@@ -513,7 +515,7 @@ function createMcpServer(env: Bindings) {
           };
         }
 
-        const playlistList = playlists.map(playlist => 
+        const playlistList = playlists.map(playlist =>
           `- ${playlist.name} (${playlist.trackCount} tracks, ${playlist.moodName || 'No mood'}) - https://open.spotify.com/playlist/${playlist.spotifyPlaylistId}`
         ).join('\n');
 
@@ -548,11 +550,11 @@ app.get("/", (c) => {
 
 app.get("/health", async (c) => {
   const db = drizzle(c.env.DB);
-  
+
   try {
     const moodsCount = await db.select().from(schema.moods);
     const tracksCount = await db.select().from(schema.tracks);
-    
+
     return c.json({
       status: "healthy",
       moods_available: moodsCount.length,
@@ -576,23 +578,23 @@ app.get("/auth/spotify", (c) => {
 app.get("/auth/spotify/callback", async (c) => {
   const code = c.req.query("code");
   const error = c.req.query("error");
-  
+
   if (error) {
     return c.text(`Authentication error: ${error}`, 400);
   }
-  
+
   if (!code) {
     return c.text("Missing authorization code", 400);
   }
-  
+
   try {
     const spotify = new SpotifyAPI(c.env.SPOTIFY_CLIENT_ID, c.env.SPOTIFY_CLIENT_SECRET, c.env.SPOTIFY_REDIRECT_URI);
     const tokenResponse = await spotify.exchangeCodeForToken(code);
     const userProfile = await spotify.getUserProfile(tokenResponse.access_token);
-    
+
     const db = drizzle(c.env.DB);
     const expiresAt = new Date(Date.now() + tokenResponse.expires_in * 1000);
-    
+
     const [user] = await db.insert(schema.users).values({
       spotifyId: userProfile.id,
       email: userProfile.email,
@@ -621,7 +623,7 @@ app.get("/auth/spotify/callback", async (c) => {
 app.all("/mcp", async (c) => {
   const mcpServer = createMcpServer(c.env);
   const transport = new StreamableHTTPTransport();
-  
+
   await mcpServer.connect(transport);
   return transport.handleRequest(c);
 });
@@ -637,7 +639,6 @@ app.get("/openapi.json", c => {
 });
 
 app.use("/fp/*", createFiberplane({
-  app,
   openapi: { url: "/openapi.json" }
 }));
 
