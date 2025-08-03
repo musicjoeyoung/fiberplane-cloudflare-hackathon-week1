@@ -1,103 +1,241 @@
-## 🪿 HONC
+# 🎵 Focus Music Tool - MCP Server
 
-This is a project created with the `create-honc-app` template. 
+A Model Context Protocol (MCP) server that creates real Spotify playlists based on your mood and focus needs. Built for seamless integration with AI assistants and MCP-compatible clients.
 
-Learn more about the HONC stack on the [website](https://honc.dev) or the main [repo](https://github.com/fiberplane/create-honc-app).
+## 🎯 What This Does
 
-There is also an [Awesome HONC collection](https://github.com/fiberplane/awesome-honc) with further guides, use cases and examples.
+This MCP server connects to Spotify's Web API to create actual playlists in your Spotify account based on mood parameters like "focused", "energetic", "calm", or "creative". Instead of just suggesting tracks, it creates real playlists you can immediately play.
 
-### Getting started
-[D1](https://developers.cloudflare.com/d1/) is Cloudflare's serverless SQL database. Running HONC with a D1 database involves two key steps: first, setting up the project locally, and second, deploying it in production. You can spin up your D1 database locally using Wrangler. If you're planning to deploy your application for production use, ensure that you have created a D1 instance in your Cloudflare account.
+## ✨ Key Features
 
-### Project structure
+- 🎧 **Real Spotify Integration** - Creates actual playlists in your Spotify account
+- 🔐 **OAuth Authentication** - Secure Spotify login flow
+- 🎨 **Mood-Based Generation** - Curated playlists for different focus states
+- 🤖 **AI Assistant Ready** - Works with any MCP-compatible AI client
+- ☁️ **Cloud Deployed** - Hosted on Cloudflare Workers for global accessic Tool - MCP Server
+A Model Context Protocol (MCP) server that creates real Spotify playlists based on your mood and focus needs. Built for seamless integration with AI assistants and MCP-compatible clients.
 
-```#
-├── src
-│   ├── index.ts # Hono app entry point
-│   └── db
-│       └── schema.ts # Database schema
-├── .dev.vars.example # Example .dev.vars file
-├── .prod.vars.example # Example .prod.vars file
-├── seed.ts # Optional script to seed the db
-├── drizzle.config.ts # Drizzle configuration
-├── package.json
-├── tsconfig.json # TypeScript configuration
-└── wrangler.toml # Cloudflare Workers configuration
+🎯 What This Does
+This MCP server connects to Spotify's Web API to create actual playlists in your Spotify account based on mood parameters like "focused", "energetic", "calm", or "creative". Instead of just suggesting tracks, it creates real playlists you can immediately play.
+
+✨ Key Features
+🎧 Real Spotify Integration - Creates actual playlists in your Spotify account
+🔐 OAuth Authentication - Secure Spotify login flow
+🎨 Mood-Based Generation - Curated playlists for different focus states
+🤖 AI Assistant Ready - Works with any MCP-compatible AI client
+☁️ Cloud Deployed - Hosted on Cloudflare Workers for global access
+## 🚀 Live Demo
+
+**MCP Server URL:** `https://6cdf29fb3b345ce5e8b4bb57.fp.dev/mcp`
+
+You can connect to this URL from any MCP-compatible client and start creating playlists immediately!
+
+## 📋 Prerequisites
+
+### For Users:
+- Spotify Account (Free or Premium)
+- MCP-Compatible Client (like Fiberplane Codegen, Claude Desktop, etc.)
+
+### For Developers:
+- Spotify Developer Account (to get your own API credentials)
+- Cloudflare Account (for deployment)
+- Node.js/Bun (for local development)
+## 🎮 How to Use (For End Users)
+
+### Step 1: Connect to the MCP Server
+
+In your MCP-compatible client (like Fiberplane Codegen):
+
+1. Add MCP Server
+2. URL: `https://6cdf29fb3b345ce5e8b4bb57.fp.dev/mcp`
+3. Name: "Focus Music Tool"
+
+### Step 2: Authenticate with Spotify
+
+1. Ask your AI assistant: "Get me a Spotify authentication URL"
+2. Click the provided URL
+3. Log in to Spotify
+4. Authorize the app
+5. Copy your User ID from the success page
+
+### Step 3: Create Playlists
+
+Ask your AI assistant: "Create a focused study playlist with 20 tracks"
+
+The AI will use your User ID to create a real Spotify playlist!
+
+### Step 4: Enjoy Your Music
+
+1. Get a direct Spotify URL
+2. Click to open in Spotify app
+3. Start listening immediately
+## 🛠️ Available MCP Tools
+
+| Tool | Description | Parameters |
+|------|-------------|------------|
+| `get_spotify_auth_url` | Get Spotify OAuth URL | `state` (optional) |
+| `authenticate_spotify` | Complete authentication | `code` (from callback) |
+| `generate_spotify_playlist` | Create real Spotify playlist | `userId`, `mood`, `playlistName`, `trackCount`, `isPublic` |
+| `get_available_moods` | List available mood categories | None |
+| `get_user_playlists` | View user's created playlists | `userId` |
+
+## 🎨 Supported Moods
+
+- **focused** - Deep concentration music for study sessions
+- **energetic** - Upbeat tracks for motivation and workouts
+- **calm** - Relaxing sounds to reduce anxiety and stress
+- **creative** - Inspiring melodies for creative thinking
+- **productive** - Lo-fi beats for productivity
+- **motivated** - Motivational tracks for goal achievement
+## 🏗️ Technical Stack
+
+### Backend
+- **Runtime:** Cloudflare Workers
+- **Framework:** Hono.js
+- **Database:** Cloudflare D1 (SQLite)
+- **ORM:** Drizzle ORM
+- **Protocol:** Model Context Protocol (MCP)
+
+### APIs & Services
+- **Spotify Web API** - Music data and playlist creation
+- **OAuth 2.0** - Secure authentication flow
+- **MCP Transport** - HTTP-based communication
+
+### Database Schema
+- **Users** - Spotify authentication tokens
+- **Moods** - Mood categories and descriptions
+- **Tracks** - Cached Spotify track metadata
+- **Playlists** - Created playlist records
+- **Mood-Track Associations** - Curated mood mappings
+## 🔧 Development Setup
+
+### 1. Clone Repository
+```bash
+git clone <your-repo-url>
+cd focus-music-tool-mcp
 ```
 
-### Commands for local development
-
-Run the migrations and (optionally) seed the database:
-
-```sh
-# this is a convenience script that runs db:touch, db:generate, db:migrate, and db:seed
-npm run db:setup
+### 2. Install Dependencies
+```bash
+bun install
 ```
 
-Run the development server:
+### 3. Set Up Spotify App
+1. Go to [Spotify Developer Dashboard](https://developer.spotify.com/dashboard)
+2. Create new app
+3. Set redirect URI: `http://localhost:8787/auth/spotify/callback`
+4. Copy Client ID and Client Secret
 
-```sh
-npm run dev
+### 4. Configure Environment
+```bash
+# .env
+SPOTIFY_CLIENT_ID=your_client_id_here
+SPOTIFY_CLIENT_SECRET=your_client_secret_here
+SPOTIFY_REDIRECT_URI=http://localhost:8787/auth/spotify/callback
 ```
 
-As you iterate on the database schema, you'll need to generate a new migration file and apply it like so:
-
-```sh
-npm run db:generate
-npm run db:migrate
+### 5. Run Locally
+```bash
+bun run dev
 ```
 
-### Commands for deployment
+### 6. Test MCP Connection
+Connect your MCP client to: `http://localhost:8787/mcp`
 
-Before deploying your worker to Cloudflare, ensure that you have a running D1 instance on Cloudflare to connect your worker to.
+## 🚀 Deployment
 
-You can create a D1 instance by navigating to the `Workers & Pages` section and selecting `D1 SQL Database.`
+### Cloudflare Workers
 
-Alternatively, you can create a D1 instance using the CLI:
+1. **Install Wrangler CLI**
+   ```bash
+   npm install -g wrangler
+   ```
 
-```sh
-npx wrangler d1 create <database-name>
+2. **Configure Secrets**
+   ```bash
+   wrangler secret put SPOTIFY_CLIENT_ID
+   wrangler secret put SPOTIFY_CLIENT_SECRET
+   wrangler secret put SPOTIFY_REDIRECT_URI
+   ```
+
+3. **Deploy**
+   ```bash
+   wrangler deploy
+   ```
+
+### Alternative: Fiberplane Codegen
+- Use the built-in deployment tools
+- Set secrets in the dashboard
+- Deploy with one click
+## 🔌 MCP Client Integration
+
+### Fiberplane Codegen
+Add MCP Server → Enter URL → Connect
+
+### Claude Desktop
+```json
+{
+  "mcpServers": {
+    "focus-music-tool": {
+      "command": "node",
+      "args": ["mcp-client.js"],
+      "env": {
+        "MCP_SERVER_URL": "https://your-deployment-url.com/mcp"
+      }
+    }
+  }
+}
 ```
+## 🎵 Example Usage
 
-After creating the database, update the `wrangler.toml` file with the database id.
+### Creating a Study Playlist
+- **User:** "I need a focused playlist for studying, about 45 minutes"
+- **AI:** Creates "Deep Focus Study Session" with 15 tracks
+- **Result:** Real Spotify playlist ready to play
 
-```toml
-[[d1_databases]]
-binding = "DB"
-database_name = "honc-d1-database"
-database_id = "<database-id-you-just-created>"
-migrations_dir = "drizzle/migrations"
-```
+### Workout Motivation
+- **User:** "Create an energetic workout playlist"
+- **AI:** Generates high-energy playlist with upbeat tracks
+- **Result:** Motivational playlist for your workout
 
-Include the following information in a `.prod.vars` file:
+### Anxiety Relief
+- **User:** "I'm feeling anxious, can you make a calming playlist?"
+- **AI:** Creates soothing playlist with relaxing tracks
+- **Result:** Peaceful music to help reduce stress
+## 🔒 Security & Privacy
 
-```sh
-CLOUDFLARE_D1_TOKEN="" # An API token with D1 edit permissions. You can create API tokens from your Cloudflare profile
-CLOUDFLARE_ACCOUNT_ID="" # Find your Account id on the Workers & Pages overview (upper right)
-CLOUDFLARE_DATABASE_ID="" # Find the database ID under workers & pages under D1 SQL Database and by selecting the created database
-```
+- **OAuth 2.0** - Industry-standard authentication
+- **Token Encryption** - Secure storage of access tokens
+- **Private Playlists** - Default to private (user can choose public)
+- **No Music Storage** - Only metadata cached, no audio files
+- **User Control** - Users own their Spotify data
 
-If you haven’t generated the latest migration files yet, run:
-```shell
-npm run db:generate
-```
+## 🤝 Contributing
 
-Afterwards, run the migration script for production:
-```shell
-npm run db:migrate:prod
-```
+1. Fork the repository
+2. Create feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Open Pull Request
 
-Change the name of the project in `wrangler.toml` to something appropriate for your project:
+## 📄 License
 
-```toml
-name = "my-d1-project"
-```
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-Finally, deploy your worker
+## 🙋‍♂️ Support
 
-```shell 
-npm run deploy
-```
+- **Issues:** [Open a GitHub issue](https://github.com/your-repo/issues)
+- **Questions:** [Start a discussion](https://github.com/your-repo/discussions)
+- **MCP Documentation:** [Model Context Protocol](https://modelcontextprotocol.io)
+- **Spotify API:** [Spotify Web API Documentation](https://developer.spotify.com/documentation/web-api)
 
+## 🎉 Acknowledgments
 
-# fiberplane-cloudflare-hackathon-week1
+- **Model Context Protocol** - For the amazing protocol specification
+- **Spotify** - For the comprehensive Web API
+- **Cloudflare** - For the excellent Workers platform
+- **Fiberplane** - For the MCP development tools
+
+---
+
+**Made with ❤️ for developers and music lovers who want AI-generated playlists that actually work!**
