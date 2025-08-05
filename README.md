@@ -202,40 +202,17 @@ Add MCP Server → Enter URL → Connect
 - **User:** "I'm feeling anxious, can you make a calming playlist?"
 - **AI:** Creates soothing playlist with relaxing tracks
 - **Result:** Peaceful music to help reduce stress
-## 🔒 Security & Privacy
 
+## 🔒 Security & Privacy
 - **OAuth 2.0** - Industry-standard authentication
 - **Token Encryption** - Secure storage of access tokens
 - **Private Playlists** - Default to private (user can choose public)
 - **No Music Storage** - Only metadata cached, no audio files
 - **User Control** - Users own their Spotify data
 
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🙋‍♂️ Support
-
-- **Issues:** [Open a GitHub issue](https://github.com/your-repo/issues)
-- **Questions:** [Start a discussion](https://github.com/your-repo/discussions)
-- **MCP Documentation:** [Model Context Protocol](https://modelcontextprotocol.io)
-- **Spotify API:** [Spotify Web API Documentation](https://developer.spotify.com/documentation/web-api)
 
 ## 🎉 Acknowledgments
-
 - **Model Context Protocol** - For the amazing protocol specification
 - **Spotify** - For the comprehensive Web API
 - **Cloudflare** - For the excellent Workers platform
 - **Fiberplane** - For the MCP development tools
-
----
-
-**Made with ❤️ for developers and music lovers who want AI-generated playlists that actually work!**
