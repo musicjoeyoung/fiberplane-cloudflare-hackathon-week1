@@ -1,13 +1,11 @@
-import * as schema from "./db/schema";
-
 import { createFiberplane, createOpenAPISpec } from "@fiberplane/hono";
-
+import { drizzle } from "drizzle-orm/d1";
 import { Hono } from "hono";
+import { eq } from "drizzle-orm";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPTransport } from "@hono/mcp";
-import { drizzle } from "drizzle-orm/d1";
-import { eq } from "drizzle-orm";
 import { z } from "zod";
+import * as schema from "./db/schema";
 
 type Bindings = {
   DB: D1Database;
@@ -639,6 +637,7 @@ app.get("/openapi.json", c => {
 });
 
 app.use("/fp/*", createFiberplane({
+  app,
   openapi: { url: "/openapi.json" }
 }));
 
