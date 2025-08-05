@@ -1,11 +1,13 @@
+import * as schema from "./db/schema";
+
 import { createFiberplane, createOpenAPISpec } from "@fiberplane/hono";
-import { drizzle } from "drizzle-orm/d1";
+
 import { Hono } from "hono";
-import { eq } from "drizzle-orm";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPTransport } from "@hono/mcp";
+import { drizzle } from "drizzle-orm/d1";
+import { eq } from "drizzle-orm";
 import { z } from "zod";
-import * as schema from "./db/schema";
 
 type Bindings = {
   DB: D1Database;
@@ -636,9 +638,16 @@ app.get("/openapi.json", c => {
   }));
 });
 
+const spec = createOpenAPISpec(app, {
+  info: {
+    title: "Focus Music Tool MCP Server",
+    version: "1.0.0",
+    description: "MCP server for generating focus playlists with Spotify integration"
+  },
+});
+
 app.use("/fp/*", createFiberplane({
-  app,
-  openapi: { url: "/openapi.json" }
+  openapi: { document: spec }
 }));
 
 export default app;
