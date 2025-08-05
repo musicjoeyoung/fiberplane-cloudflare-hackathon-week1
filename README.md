@@ -1,6 +1,6 @@
 # 🎵 Focus Music Tool - MCP Server
 
-A Model Context Protocol (MCP) server that creates real Spotify playlists based on your mood and focus needs. Built for seamless integration with AI assistants and MCP-compatible clients.
+Need a playlist while you're working? Coding and tired? Problem solving and excited? This is a Model Context Protocol (MCP) server that creates real Spotify playlists based on your mood and focus needs. Built for seamless integration with AI assistants and MCP-compatible clients.
 
 ## 🎯 What This Does
 
